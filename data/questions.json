@@ -1,0 +1,56 @@
+[
+	{
+		"value": "Qui fait le plus le ménage ?",
+		"subvalue": "",
+		"result": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"value": "Qui sort les poubelles ?",
+		"subvalue": "",
+		"result": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"value": "Qui conduit le mieux ?",
+		"subvalue": "",
+		"result": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"value": "Qui est le plus calin ?",
+		"subvalue": "",
+		"result": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"value": "Qui est le plus organisé ?",
+		"subvalue": "",
+		"result": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"value": "Qui passe le plus de temps devant la TV ?",
+		"subvalue": "",
+		"result": [
+			0,
+			0,
+			0
+		]
+	}
+]

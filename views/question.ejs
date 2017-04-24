@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Portail</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/concise.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Plugin CSS -->
+    <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="css/creative.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top">
+
+    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top"><%= event %></a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                  <% titles.forEach(function(title) { %>
+                      <li>
+                          <a class="page-scroll" href="<%= title.href %>"><%= title.name %></a>
+                      </li>
+                  <% }); %>
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+    <header>
+        <div class="header-content">
+            <div class="header-content-inner">
+                <div class="row">
+
+                  <p><h1><%- message   %></h1></p>
+                  <%if (admin) { %>
+                    <button type="button" class="btn btn-info" onclick="nextQuestion()">Next</button>
+                  <% } %>
+              </div>
+
+
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="reference" style="display:none">
+    <!-- Question %id% Section -->
+    <section id="question_%id%">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">%head%</h2>
+                    <h3 class="section-subheading text-muted">%text%</h3>
+                </div>
+            </div>
+            <div class="row">
+              <div id="response_%id%" class="col-md-4">
+                <div class="btn-group" data-toggle="buttons">
+                  <label class="btn btn-primary active">
+                    <input type="radio" name="response_value_%id%" value="elle" autocomplete="off"> Elle
+                  </label>
+                  <label class="btn btn-primary">
+                    <input type="radio" name="response_value_%id%" value="lui" autocomplete="off"> Lui
+                  </label>
+                  <label class="btn btn-primary">
+                    <input type="radio" name="response_value_%id%" value="lesdeux" autocomplete="off"> Les deux
+                  </label>
+                </div>
+                <button type="button" class="btn btn-success" onclick="validate_response(%id%)">Valider</button>
+              </div>
+              <div id="graph_div_%id%" class="col-md-4">
+
+              </div>
+              <div class="col-md-4">
+                <%if (admin) { %>
+                  <button type="button" class="btn btn-info" onclick="nextQuestion()">Next</button>
+                <% } %>
+              </div>
+        </div>
+    </section>
+
+      </div>
+    <script>
+    function createQuestionSection(id,head,text,isgray){
+        html = document.getElementById('reference').innerHTML;
+        html = html.replace(new RegExp("%id%", 'g'),id)
+        html = html.replace("%head%",head)
+        html = html.replace("%text%",text)
+        document.body.innerHTML += html;
+        if(isgray){
+          $('#'+"question_"+id).addClass("bg-light-gray");
+        }
+        $('html, body').animate({
+             scrollTop: $('#'+"question_"+id).offset().top
+         }, 2000);
+         //getData();
+    }
+    </script>
+
+    <!-- jQuery -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="vendor/scrollreveal/scrollreveal.min.js"></script>
+    <script src="vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
+
+      <!-- Theme JavaScript -->
+    <script src="js/creative.min.js"></script>
+
+      <!-- canvajs -->
+    <script src="js/chartjs.js"></script>
+
+
+
+    <script type="text/javascript">
+
+        window.onload = function () {
+            setInterval(function(){refresh()},2000);
+            //setTimeout(function(){refresh()},2000);
+          };
+
+          var questions = [];
+
+          function refresh(){
+            $.get( "getCurrentQuestions.json", function( data ) {
+              //console.log(data);
+              i=0;
+              data.forEach(function(element) {
+                  i++;
+                  id=i;
+                  //console.log(element);
+                  if(i>questions.length){
+                    questions.push(element);
+                    createQuestionSection(i,element.value,element.subvalue,i%2);
+                  }
+                  if(i!= questions.length){
+                    //disable ability to answser
+                    $('#response_'+id).html(" ");
+                  }
+                  if($('#response_'+id).html() == " "){
+                      loadGraph(id,element.result);
+                  }
+              });
+
+            });
+          }
+
+          function loadGraph(id,dataInput){
+          $('#graph_div_'+id).html('<canvas id="graph_'+id+'" width="200" height="200"></canvas>');
+          var ctx = document.getElementById("graph_"+id);
+
+          var options = {
+              responsive: false,
+              scales: {
+                yAxes: [{
+                    display: true,
+                    ticks: {
+                        beginAtZero: true   // minimum value will be 0.
+                    }
+                }]
+              },
+              animation:{
+                  animateScale:false,
+                  duration:0
+              }
+          };
+          var data = {
+            labels: ["elle", "lui", "les deux"],
+            datasets: [
+                {
+                  backgroundColor: [
+                      'rgba(255, 153, 204, 0.6)',
+                      'rgba(54, 162, 255, 0.6)',
+                      'rgba(128, 128, 128, 0.6)'
+                    ],
+                    label: "Reponse",
+                    data: dataInput,
+
+
+                }
+            ]
+        };
+
+          var myBarChart = new Chart(ctx, {
+              type: 'bar',
+              data: data,
+              options: options
+          });
+
+        }
+
+
+        function validate_response(id){
+          var value = $('input[name="response_value_'+id+'"]:checked').val();
+          if(value == undefined){
+            alert("Choississez votre réponse !");
+          }else{
+            $('#response_'+id).html(" ");
+            var req_param ="";
+            switch(value) {
+              case 'elle':
+                  req_param ="/1/0/0"
+                  break;
+              case 'lui':
+                  req_param ="/0/1/0"
+                  break;
+              case 'lesdeux':
+                  req_param ="/0/0/1"
+                  break;
+              default:
+                    alert("Erreur technique : Choississez votre réponse !");
+            }
+            console.log("setQuestionResult/"+id+req_param);
+            $.post("setQuestionResult/"+id+req_param, function( data ) {
+              refresh();
+            });
+          }
+        }
+
+        function nextQuestion(){
+          var nexQ = parseInt(questions.length)+1;
+          $.post("setCurrent/"+nexQ, function( data ) {
+            refresh();
+          });
+        }
+        </script>
+
+</body>
+
+</html>

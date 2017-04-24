@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <title><%= event %></title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/concise.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Plugin CSS -->
+    <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="css/creative.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top">
+
+
+
+    <header>
+        <div class="header-content">
+            <div class="header-content-inner">
+                <div class="row">
+
+                  <p><h1><%- message   %></h1></p>
+                  <%if (admin) { %>
+                    <button type="button" class="btn btn-info" onclick="nextQuestion()">Next</button>
+                  <% } %>
+              </div>
+
+
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id='container' class="container-fluid">
+
+    </div>
+
+
+    <div id="reference" style="display:none">
+    <!-- Question %id% Section -->
+      <section id="question_%id%">
+          <div class="container-fluid">
+              <div class="row">
+                  <div class="col-lg-12 text-center">
+                      <h2 class="section-heading">%head%</h2>
+                      <h3 class="section-subheading text-muted">%text%</h3>
+                  </div>
+              </div>
+              <div class="row">
+                <div id="response_%id%" class="col-md-4">
+                  <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-primary active">
+                      <input type="radio" name="response_value_%id%" value="elle" autocomplete="off"> <%= parameters.name[0] %>
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" name="response_value_%id%" value="lui" autocomplete="off"> <%= parameters.name[1] %>
+                    </label>
+                    <label class="btn btn-primary">
+                      <input type="radio" name="response_value_%id%" value="lesdeux" autocomplete="off"> <%= parameters.name[2] %>
+                    </label>
+                  </div>
+                  <button type="button" class="btn btn-success" onclick="validate_response(%id%)">Valider</button>
+                </div>
+                <div id="graph_div_%id%" class="col-md-4">
+
+                </div>
+
+                <div class="col-md-4">
+                  <%if (admin) { %>
+                      <button type="button" class="btn btn-info" onclick="nextQuestion()">Next</button>
+                  <% } %>
+                </div>
+              </div>
+              <br />
+              <br />
+              <div class="row">
+                <div  class="col-md-4"></div>
+                <div id="result_div_%id%" class="col-md-4"></div>
+                <div  class="col-md-4"></div>
+              </div>
+        </div>
+      </section>
+  </div>
+    <script>
+    function createQuestionSection(id,head,text,isgray){
+        html = document.getElementById('reference').innerHTML;
+        html = html.replace(new RegExp("%id%", 'g'),id)
+        html = html.replace("%head%",head)
+        html = html.replace("%text%",text)
+        document.getElementById('container').innerHTML += html;
+        if(isgray){
+          $('#'+"question_"+id).addClass("bg-light-gray");
+        }
+        $('html, body').animate({
+             scrollTop: $('#'+"question_"+id).offset().top
+         }, 2000);
+         //getData();
+    }
+    </script>
+
+    <!-- jQuery -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="vendor/scrollreveal/scrollreveal.min.js"></script>
+    <script src="vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
+
+      <!-- Theme JavaScript -->
+    <script src="js/creative.min.js"></script>
+
+      <!-- canvajs -->
+    <script src="js/chartjs.js"></script>
+
+    <style>
+    .szlider{
+    width:100%;
+    height:15px;
+    border:1px solid #000;
+    overflow:hidden; }
+.szliderbar{
+    width:37%;
+    height:15px;
+    border-right: 1px solid #000000;
+    /*background: #d65946;*/
+    background: #aaaaee;
+   }
+.szazalek {
+    color: #000000;
+    font-size: 12px;
+    font-style: italic;
+    font-weight: bold;
+    left: 25px;
+    position: relative;
+    top: -16px; }
+</style>
+
+<script>
+function drawszlider(id,ossz, meik,text){
+    var szazalek=Math.round((meik*100)/ossz);
+    document.getElementById('szliderbar_'+id).style.width=szazalek+'%';
+    document.getElementById('szazalek_'+id).innerHTML=text+' '+szazalek+'%';
+}
+
+function drawProgress(div, id, value,valuemax, text){
+  document.getElementById(div).innerHTML='<div class="szlider">    <div class="szliderbar" id="szliderbar_'+id+'">    </div>    <div class="szazalek" id="szazalek_'+id+'">    </div></div>';
+  drawszlider(id,valuemax,value,text)
+}
+</script>
+
+
+    <script type="text/javascript">
+
+        window.onload = function () {
+            $('header').css('background-image','url(../img/header_<%=parameters.key %>.jpg)')
+            setInterval(function(){refresh()},800);
+            //setTimeout(function(){refresh()},2000);
+          };
+          var gameid=null;
+          var questions = [];
+
+          function refresh(){
+            $.get( "getCurrentQuestions.json", function( rep ) {
+
+            //  console.log(rep.id + ' - '+gameid);
+              if(gameid==null){
+                gameid=rep.id;
+              }else if(gameid != rep.id){
+                 location.reload();
+              }
+              data = rep.questions;
+              //console.log(data);
+              i=0;
+              var newEntry=false;
+              data.forEach(function(element) {
+                  i++;
+                  id=i;
+                  //console.log(element);
+                  if(i>questions.length){
+                    questions.push(element);
+                    createQuestionSection(i,element.value,element.subvalue,i%2);
+                    $('#response_'+id).html(" ");
+                    newEntry = true;
+                  }
+                  if($('#response_'+id).html() == " "){
+                      loadGraph(id,element.result,rep.nbuser);
+                  }
+
+                  var nb=0;
+                  element.result.forEach(function(v){nb+=v});
+                  displayResponse(id,nb,rep.nbuser);
+              });
+
+            });
+          }
+
+          function displayResponse(id,nb,nbuser){
+            $('#result_div_'+id).html(nb+' resultat(s)/'+nbuser+' utilisateur(s)');
+            drawProgress('result_div_'+id, id, nb,nbuser, nb+'/'+nbuser)
+          }
+          function loadGraph(id,dataInput,nbuser){
+          $('#graph_div_'+id).html('<canvas id="graph_'+id+'" width="200" height="200"></canvas> ');
+          var ctx = document.getElementById("graph_"+id);
+
+          var options = {
+              responsive: false,
+              animation:{
+                  animateScale:false,
+                  duration:0
+              }
+          };
+          var data = {
+            labels: [<% parameters.name.forEach(function(actor) { %> '<%=actor%>',<%})%>],
+            datasets: [
+                {
+                  backgroundColor: [
+                      'rgba(255, 153, 204, 0.6)',
+                      'rgba(54, 162, 255, 0.6)',
+                      'rgba(128, 128, 128, 0.6)'
+                    ],
+                    borderColor: [
+                      'rgba(255, 153, 204, 0.8)',
+                      'rgba(54, 162, 255, 0.8)',
+                      'rgba(128, 128, 128, 0.8)'
+                    ],
+                    borderWidth: 1,
+                    label: "Reponse",
+                    data: dataInput,
+
+
+                }
+            ]
+        };
+
+          var myBarChart = new Chart(ctx, {
+              type: 'pie',
+              data: data,
+              options: options
+          });
+
+        }
+
+
+        function validate_response(id){
+          var value = $('input[name="response_value_'+id+'"]:checked').val();
+          if(value == undefined){
+            alert("Choississez votre réponse !");
+          }else{
+            $('#response_'+id).html(" ");
+            var req_param ="";
+            switch(value) {
+              case 'elle':
+                  req_param ="/1/0/0"
+                  break;
+              case 'lui':
+                  req_param ="/0/1/0"
+                  break;
+              case 'lesdeux':
+                  req_param ="/0/0/1"
+                  break;
+              default:
+                    alert("Erreur technique : Choississez votre réponse !");
+            }
+            console.log("setQuestionResult/"+id+req_param);
+            $.post("setQuestionResult/"+id+req_param, function( data ) {
+              refresh();
+            });
+          }
+        }
+
+        function nextQuestion(){
+          var nexQ = parseInt(questions.length)+1;
+          $.post("setCurrent/"+nexQ, function( data ) {
+            refresh();
+          });
+        }
+        function previousQuestion(){
+          var nexQ = parseInt(questions.length)-1;
+          $.post("setCurrent/"+nexQ, function( data ) {
+            refresh();
+          });
+        }
+
+
+
+        // Notification
+        function sendNotification(message, submessage ="") {
+          //disable notification for admin
+          <%if (true) { %>
+              return;
+          <% } %>
+
+          if (Notification.permission === "granted") {
+            // Si c'est ok, créons une notification
+            var options = {
+                  body: submessage,
+                  icon: "/img/icon_notification_<%=parameters.key %>.png"
+              }
+            var notification = new Notification(message,options);
+            try{
+              var synth = window.speechSynthesis;
+            //  synth.speak(new SpeechSynthesisUtterance(message+" "+submessage));
+            }catch(e){}
+
+          }
+        }
+        function checkNotification() {
+          return;
+          // Voyons si le navigateur supporte les notifications
+          if (!("Notification" in window)) {
+            //alert("Ce navigateur ne supporte pas les notifications desktop");
+          }
+                  // Voyons si l'utilisateur est OK pour recevoir des notifications
+          else if (Notification.permission === "granted") {
+            // Si c'est ok, créons une notification
+            sendNotification("Vous allez recevoir des notifications a chaque question");
+          }
+
+          // Sinon, nous avons besoin de la permission de l'utilisateur
+          // Note : Chrome n'implémente pas la propriété statique permission
+          // Donc, nous devons vérifier s'il n'y a pas 'denied' à la place de 'default'
+          else if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+
+              // Quelque soit la réponse de l'utilisateur, nous nous assurons de stocker cette information
+              if(!('permission' in Notification)) {
+                Notification.permission = permission;
+              }
+
+              // Si l'utilisateur est OK, on crée une notification
+              if (permission === "granted") {
+                sendNotification("Les notifications par question sont activées");
+              }
+            });
+          }
+
+          // Comme ça, si l'utlisateur a refusé toute notification, et que vous respectez ce choix,
+          // il n'y a pas besoin de l'ennuyer à nouveau.
+        }
+        //checkNotification();
+        $('header').css("min-height",'50%')
+        $('h1').css("background-color","rgba(125,125,125,0.7)")
+        </script>
+
+</body>
+
+</html>

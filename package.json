@@ -1,0 +1,17 @@
+{
+  "name": "portail",
+  "version": "1.0.0",
+  "description": "portail",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "start": "nodejs app.js",
+    "dev": "nodejs node_modules/.bin/nodemon app.js",
+    "startprod": "forever app.js"
+  },
+  "keywords": [
+    "portail"
+  ],
+  "author": "simon",
+  "license": "ISC"
+}
